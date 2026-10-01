@@ -147,14 +147,15 @@ class RichProgressHandler:
         spinner_name = "line" if sys.platform == "win32" else "dots"
         self.progress = Progress(
             SpinnerColumn(spinner_name),
-            TextColumn("[bold cyan]{task.description}"),
-            BarColumn(bar_width=30),
+            TextColumn("[bold cyan]{task.fields[label]}", table_column=None),
+            BarColumn(bar_width=25),
             self.progress_col,
             self.download_size_col,
             self.speed_col,
             self.eta_col,
             console=self.console,
-            transient=False,
+            transient=True,
+            auto_refresh=True,
         )
         self.task_id: TaskID | None = None
         self._started: bool = False
@@ -237,11 +238,13 @@ class RichProgressHandler:
         if status == "downloading":
             description = f"Downloading {stream_type}: {clean_name}"
             self.last_description = description
+            label = f"Downloading {stream_type}"
             if self.task_id is None:
                 self.task_id = self.progress.add_task(
                     description,
                     total=total,
                     completed=downloaded,
+                    label=label,
                 )
             else:
                 self.progress.update(
@@ -249,16 +252,19 @@ class RichProgressHandler:
                     description=description,
                     total=total,
                     completed=downloaded,
+                    label=label,
                 )
         elif status == "finished":
             final_total = total or downloaded
             description = f"Finished downloading {stream_type}: {clean_name}"
             self.last_description = description
+            label = f"Finished {stream_type}"
             if self.task_id is None:
                 self.task_id = self.progress.add_task(
                     description,
                     total=final_total,
                     completed=final_total,
+                    label=label,
                 )
             else:
                 self.progress.update(
@@ -266,12 +272,13 @@ class RichProgressHandler:
                     description=description,
                     total=final_total,
                     completed=final_total,
+                    label=label,
                 )
         elif status == "error":
             description = f"Download error on {clean_name}"
             self.last_description = description
             if self.task_id is not None:
-                self.progress.update(self.task_id, description=description)
+                self.progress.update(self.task_id, description=description, label="Error")
 
     def _handle_postprocessor(self, d: dict[str, Any]) -> None:
         self.start()
@@ -280,29 +287,29 @@ class RichProgressHandler:
         self.last_status = status
         self.last_phase = f"postprocessing:{pp}"
 
-        # MoveFiles is a momentary local rename after download is already finished.
-        # Don't overwrite the completed 100% download bar with an indeterminate MoveFiles bar.
-        if pp == "MoveFiles":
-            return
-
         if status == "started":
             if pp == "Merger":
                 desc = "Merging video and audio streams with FFmpeg..."
+                label = "Merging streams"
             elif pp == "ExtractAudio":
                 desc = "Extracting audio with FFmpeg..."
+                label = "Extracting audio"
             else:
                 desc = f"Processing ({escape(pp)})..."
+                label = f"Processing {escape(pp)}"
 
             self.last_description = desc
             if self.task_id is None:
-                self.task_id = self.progress.add_task(desc, total=None)
+                self.task_id = self.progress.add_task(desc, total=None, label=label)
             else:
-                self.progress.update(self.task_id, total=None, completed=0, description=desc)
+                self.progress.update(
+                    self.task_id, total=None, completed=0, description=desc, label=label
+                )
         elif status == "finished":
             desc = f"Completed {escape(pp)}"
             self.last_description = desc
             if self.task_id is not None:
-                self.progress.update(self.task_id, description=desc)
+                self.progress.update(self.task_id, description=desc, label=desc)
 
     @property
     def current_task(self) -> Task | None:
