@@ -154,7 +154,7 @@ class RichProgressHandler:
             self.speed_col,
             self.eta_col,
             console=self.console,
-            transient=True,
+            transient=False,
         )
         self.task_id: TaskID | None = None
         self._started: bool = False
@@ -280,13 +280,16 @@ class RichProgressHandler:
         self.last_status = status
         self.last_phase = f"postprocessing:{pp}"
 
+        # MoveFiles is a momentary local rename after download is already finished.
+        # Don't overwrite the completed 100% download bar with an indeterminate MoveFiles bar.
+        if pp == "MoveFiles":
+            return
+
         if status == "started":
             if pp == "Merger":
                 desc = "Merging video and audio streams with FFmpeg..."
             elif pp == "ExtractAudio":
                 desc = "Extracting audio with FFmpeg..."
-            elif pp == "MoveFiles":
-                desc = "Finalizing file..."
             else:
                 desc = f"Processing ({escape(pp)})..."
 
@@ -296,21 +299,10 @@ class RichProgressHandler:
             else:
                 self.progress.update(self.task_id, total=None, completed=0, description=desc)
         elif status == "finished":
-            if pp == "MoveFiles":
-                desc = "Completed MoveFiles"
-                if self.task_id is not None:
-                    total = self.last_total or 100
-                    self.progress.update(
-                        self.task_id,
-                        total=total,
-                        completed=total,
-                        description=desc,
-                    )
-            else:
-                desc = f"Completed {escape(pp)}"
-                if self.task_id is not None:
-                    self.progress.update(self.task_id, description=desc)
+            desc = f"Completed {escape(pp)}"
             self.last_description = desc
+            if self.task_id is not None:
+                self.progress.update(self.task_id, description=desc)
 
     @property
     def current_task(self) -> Task | None:
