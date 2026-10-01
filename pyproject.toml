@@ -1,0 +1,44 @@
+[project]
+name = "vdl"
+version = "0.1.0"
+description = "A production-quality terminal video downloader powered by yt-dlp"
+readme = "README.md"
+authors = [
+    { name = "Anjal Dev", email = "mkmanjal@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "rich>=15.0.0",
+    "typer>=0.27.2",
+    "yt-dlp>=2026.8.19",
+]
+
+[project.scripts]
+vdl = "vdl.cli:app"
+
+[build-system]
+requires = ["uv_build>=0.11.29,<0.12.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.8.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = [
+    "integration: opt-in live network integration tests (deselect with '-m \"not integration\"')",
+]
+addopts = "-m \"not integration\""
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = ["B008", "E501"]
+
