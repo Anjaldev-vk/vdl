@@ -154,7 +154,7 @@ class RichProgressHandler:
             self.speed_col,
             self.eta_col,
             console=self.console,
-            transient=False,
+            transient=True,
         )
         self.task_id: TaskID | None = None
         self._started: bool = False
@@ -285,6 +285,8 @@ class RichProgressHandler:
                 desc = "Merging video and audio streams with FFmpeg..."
             elif pp == "ExtractAudio":
                 desc = "Extracting audio with FFmpeg..."
+            elif pp == "MoveFiles":
+                desc = "Finalizing file..."
             else:
                 desc = f"Processing ({escape(pp)})..."
 
@@ -294,10 +296,21 @@ class RichProgressHandler:
             else:
                 self.progress.update(self.task_id, total=None, completed=0, description=desc)
         elif status == "finished":
-            desc = f"Completed {escape(pp)}"
+            if pp == "MoveFiles":
+                desc = "Completed MoveFiles"
+                if self.task_id is not None:
+                    total = self.last_total or 100
+                    self.progress.update(
+                        self.task_id,
+                        total=total,
+                        completed=total,
+                        description=desc,
+                    )
+            else:
+                desc = f"Completed {escape(pp)}"
+                if self.task_id is not None:
+                    self.progress.update(self.task_id, description=desc)
             self.last_description = desc
-            if self.task_id is not None:
-                self.progress.update(self.task_id, description=desc)
 
     @property
     def current_task(self) -> Task | None:
