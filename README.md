@@ -8,6 +8,16 @@ A robust, production-quality terminal video and audio downloader powered by `yt-
 
 ---
 
+## Download
+
+- **Windows, no setup required:** Download the standalone portable bundle from [GitHub Releases](https://github.com/Anjaldev-vk/vdl/releases/latest). Unzip and run—no Python, FFmpeg, or dependencies required!
+- **Developers (any OS):**
+  ```bash
+  uv tool install git+https://github.com/Anjaldev-vk/vdl.git
+  ```
+
+---
+
 ## Features
 
 - **Format Selection**: Nearest-resolution matching with automatic fallback (`1080p`, `720p`, `480p`, `best`), and codec preferences (`h264`, `av1`, `any`).
