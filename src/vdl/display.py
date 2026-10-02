@@ -29,8 +29,8 @@ from vdl.downloader import FormatInfo, VideoInfo, format_size
 
 logger = logging.getLogger(__name__)
 
-console = Console()
-err_console = Console(stderr=True)
+console = Console(highlight=False)
+err_console = Console(stderr=True, highlight=False)
 
 
 def print_success(message: str, title: str | None = None, path: Path | str | None = None) -> None:
@@ -38,9 +38,25 @@ def print_success(message: str, title: str | None = None, path: Path | str | Non
     text = f"[bold green]{escape(message)}[/bold green]"
     if title:
         text += f": {escape(title)}"
-    console.print(text)
+    try:
+        console.print(text)
+    except UnicodeEncodeError:
+        console.print(
+            text.encode(sys.stdout.encoding or "ascii", errors="replace").decode(
+                sys.stdout.encoding or "ascii"
+            )
+        )
+
     if path:
-        console.print(f"[dim]Saved to:[/] {escape(str(path))}")
+        path_str = f"[dim]Saved to:[/] {escape(str(path))}"
+        try:
+            console.print(path_str)
+        except UnicodeEncodeError:
+            console.print(
+                path_str.encode(sys.stdout.encoding or "ascii", errors="replace").decode(
+                    sys.stdout.encoding or "ascii"
+                )
+            )
 
 
 def print_error(message: str) -> None:

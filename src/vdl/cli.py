@@ -150,6 +150,14 @@ def main(
     ),
 ) -> None:
     """vdl: Terminal video downloader."""
+    if sys.platform == "win32":
+        try:
+            if hasattr(sys.stdout, "reconfigure"):
+                sys.stdout.reconfigure(encoding="utf-8", errors="backslashreplace")
+            if hasattr(sys.stderr, "reconfigure"):
+                sys.stderr.reconfigure(encoding="utf-8", errors="backslashreplace")
+        except Exception:
+            pass
     configure_logging(verbose=verbose, debug=debug)
 
 

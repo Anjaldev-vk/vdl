@@ -474,6 +474,10 @@ def build_ydl_opts(
         "cookiesfrombrowser": None,
     }
 
+    ffmpeg_bin = get_ffmpeg_path()
+    if ffmpeg_bin:
+        opts["ffmpeg_location"] = ffmpeg_bin
+
     if settings.proxy:
         opts["proxy"] = settings.proxy
 

@@ -6,13 +6,52 @@ import re
 import shutil
 import subprocess
 import sys
+from pathlib import Path
 
 from vdl.exceptions import FFmpegNotFoundError
 
 
+def _find_binary(name: str) -> str | None:
+    """Find a binary by checking next to the executable / frozen root, then PATH.
+
+    Checks:
+    1. Directory of sys.executable (for frozen PyInstaller onedir distribution)
+    2. 'bundled-tools' subdirectory next to sys.executable
+    3. sys._MEIPASS (for PyInstaller onefile or temporary unpacking)
+    4. 'bundled-tools' subdirectory inside sys._MEIPASS
+    5. Directory of __file__ and its parent folders (for development check)
+    6. System PATH (via shutil.which)
+    """
+    candidate_dirs: list[Path] = []
+
+    # 1 & 2. Next to sys.executable and bundled-tools
+    if getattr(sys, "executable", None):
+        exe_dir = Path(sys.executable).resolve().parent
+        candidate_dirs.append(exe_dir)
+        candidate_dirs.append(exe_dir / "bundled-tools")
+
+    # 3 & 4. PyInstaller unpack root if present
+    meipass = getattr(sys, "_MEIPASS", None)
+    if meipass:
+        meipass_dir = Path(meipass).resolve()
+        candidate_dirs.append(meipass_dir)
+        candidate_dirs.append(meipass_dir / "bundled-tools")
+
+    suffixes = [".exe", ".cmd", ".bat", ""] if sys.platform == "win32" else [""]
+
+    for d in candidate_dirs:
+        for sfx in suffixes:
+            target = d / f"{name}{sfx}"
+            if target.is_file():
+                return str(target)
+
+    # 6. Fall back to standard PATH
+    return shutil.which(name)
+
+
 def get_ffmpeg_path() -> str | None:
-    """Return the absolute path of the FFmpeg executable if found in PATH."""
-    return shutil.which("ffmpeg")
+    """Return the absolute path of the FFmpeg executable if found next to app or in PATH."""
+    return _find_binary("ffmpeg")
 
 
 def check_ffmpeg() -> tuple[bool, str | None]:
@@ -20,7 +59,7 @@ def check_ffmpeg() -> tuple[bool, str | None]:
 
     Returns:
         (True, version_str) if ffmpeg is found and runs successfully.
-        (False, None) if ffmpeg executable is not found in PATH.
+        (False, None) if ffmpeg executable is not found in PATH or bundled dir.
         (False, error_msg) if ffmpeg executable failed to execute.
     """
     path = get_ffmpeg_path()
@@ -72,13 +111,13 @@ def require_ffmpeg(action: str = "merging audio/video or converting formats") ->
 
 
 def get_js_runtime() -> tuple[str, str] | None:
-    """Check for a supported JavaScript runtime (deno, node, bun) in PATH.
+    """Check for a supported JavaScript runtime (deno, node, bun) next to app or in PATH.
 
     Returns:
         (name, path) tuple if found, None otherwise.
     """
     for runtime in ("deno", "node", "bun"):
-        found = shutil.which(runtime)
+        found = _find_binary(runtime)
         if found:
             return runtime, found
     return None

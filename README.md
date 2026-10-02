@@ -35,7 +35,7 @@ A robust, production-quality terminal video and audio downloader powered by `yt-
 
 ## Installation
 
-### Using `uv` (Recommended)
+### Method 1: Using `uv` (Recommended for Developers)
 
 Install directly as a standalone CLI tool:
 
@@ -48,6 +48,44 @@ Or sync development dependencies locally:
 ```bash
 uv sync
 uv run vdl --help
+```
+
+---
+
+### Method 2: Portable / No-install Distribution (For Users & Friends)
+
+A self-contained Windows portable directory that runs with **zero requirements**—no Python, no `uv`, no `winget`, and no administrator privileges required.
+
+#### Building the Portable Bundle
+
+```powershell
+# 1. Compile vdl into a directory bundle with PyInstaller
+uv run pyinstaller --noconfirm --onedir --name vdl --paths src --collect-all yt_dlp --copy-metadata vdl src/vdl/cli.py
+
+# 2. Bundle ffmpeg.exe and deno.exe next to vdl.exe
+Copy-Item (Get-Command ffmpeg).Source -Destination "dist\vdl\ffmpeg.exe"
+Copy-Item (Get-Command deno).Source -Destination "dist\vdl\deno.exe"
+Copy-Item THIRD_PARTY_LICENSES -Destination "dist\vdl\THIRD_PARTY_LICENSES.txt"
+```
+
+The output bundle is generated at:
+```text
+dist/vdl/
+├── vdl.exe              # Application executable
+├── ffmpeg.exe           # Bundled FFmpeg media engine
+├── deno.exe             # Bundled Deno JavaScript runtime
+├── THIRD_PARTY_LICENSES # GPL and third-party notices
+└── _internal/           # Frozen Python runtime and packages
+```
+
+#### Running on Clean Machines
+
+Simply copy or zip the `dist/vdl/` folder to any fresh Windows PC. Open terminal in that folder or add it to user PATH and run:
+
+```cmd
+vdl doctor
+vdl download "https://youtu.be/..."
+vdl audio "https://youtu.be/..." -f mp3
 ```
 
 ---

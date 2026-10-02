@@ -1,0 +1,45 @@
+# Third-Party Notices & Licenses
+
+The standalone portable distribution of `vdl` bundles third-party software components subject to their respective licenses.
+
+---
+
+## 1. FFmpeg
+
+- **Component**: FFmpeg (`ffmpeg.exe`)
+- **Version**: `9.0.2-full_build-www.gyan.dev`
+- **License**: GNU General Public License version 3 (GPLv3) (or GPLv2+ depending on enabled libraries)
+- **Source Build / Upstream**:
+  - Gyan.dev FFmpeg Windows Builds: https://www.gyan.dev/ffmpeg/builds/
+  - Release Archive: https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-9.0.2-full_build.7z
+  - Official Source Code: https://ffmpeg.org/download.html
+- **Redistribution Notice**:
+  FFmpeg is licensed under the LGPL / GPL. This distribution includes an FFmpeg build configured with `--enable-gpl --enable-version3`. Under the terms of the GNU General Public License (GPL), recipients are entitled to receive or download the complete machine-readable source code for the FFmpeg binary and any modifications. You may obtain the corresponding source code from the official repository at https://ffmpeg.org or https://github.com/FFmpeg/FFmpeg.
+
+---
+
+## 2. Deno
+
+- **Component**: Deno (`deno.exe`)
+- **Version**: `2.9.7 (x86_64-pc-windows-msvc)`
+- **License**: MIT License
+- **Copyright**: (c) 2018-2026 the Deno authors
+- **Source / Website**: https://deno.land / https://github.com/denoland/deno
+- **Notice**:
+  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the MIT License conditions.
+
+---
+
+## 3. yt-dlp
+
+- **Component**: `yt-dlp`
+- **License**: The Unlicense
+- **Repository**: https://github.com/yt-dlp/yt-dlp
+
+---
+
+## 4. Python Runtime
+
+- **Component**: Python 3.13 Embed/Frozen Runtime
+- **License**: Python Software Foundation (PSF) License
+- **Website**: https://www.python.org/

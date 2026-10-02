@@ -20,7 +20,7 @@ from rich.markup import escape
 from rich.table import Table
 
 from vdl.config import Settings, load_settings
-from vdl.media import get_ffmpeg_path
+from vdl.media import _find_binary, get_ffmpeg_path
 from vdl.network import is_proxy_reachable
 
 logger = logging.getLogger(__name__)
@@ -146,7 +146,7 @@ def check_ffmpeg() -> CheckResult:
 def check_js_runtime() -> CheckResult:
     """Verify JavaScript runtime presence (Deno = OK; Node/Bun alone = WARN)."""
     # 1. Prefer Deno (full pass)
-    deno_path = shutil.which("deno")
+    deno_path = _find_binary("deno")
     if deno_path:
         ver = _run_quick_cmd([deno_path, "--version"])
         detail = ver if ver else "Deno available"
@@ -157,7 +157,7 @@ def check_js_runtime() -> CheckResult:
         )
 
     # 2. Node.js (WARN with Deno install recommendation)
-    node_path = shutil.which("node")
+    node_path = _find_binary("node")
     if node_path:
         ver = _run_quick_cmd([node_path, "--version"])
         detail = f"Node.js ({ver})" if ver else "Node.js"
@@ -169,7 +169,7 @@ def check_js_runtime() -> CheckResult:
         )
 
     # 3. Bun (WARN with Deno install recommendation)
-    bun_path = shutil.which("bun")
+    bun_path = _find_binary("bun")
     if bun_path:
         ver = _run_quick_cmd([bun_path, "--version"])
         detail = f"Bun ({ver})" if ver else "Bun"
