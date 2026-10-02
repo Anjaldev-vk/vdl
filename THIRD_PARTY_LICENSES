@@ -7,11 +7,11 @@ The standalone portable distribution of `vdl` bundles third-party software compo
 ## 1. FFmpeg
 
 - **Component**: FFmpeg (`ffmpeg.exe`)
-- **Version**: `9.0.2-full_build-www.gyan.dev`
+- **Version**: `9.0.2-essentials_build-www.gyan.dev`
 - **License**: GNU General Public License version 3 (GPLv3) (or GPLv2+ depending on enabled libraries)
 - **Source Build / Upstream**:
   - Gyan.dev FFmpeg Windows Builds: https://www.gyan.dev/ffmpeg/builds/
-  - Release Archive: https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-9.0.2-full_build.7z
+  - Release Archive: https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-9.0.2-essentials_build.zip
   - Official Source Code: https://ffmpeg.org/download.html
 - **Redistribution Notice**:
   FFmpeg is licensed under the LGPL / GPL. This distribution includes an FFmpeg build configured with `--enable-gpl --enable-version3`. Under the terms of the GNU General Public License (GPL), recipients are entitled to receive or download the complete machine-readable source code for the FFmpeg binary and any modifications. You may obtain the corresponding source code from the official repository at https://ffmpeg.org or https://github.com/FFmpeg/FFmpeg.
